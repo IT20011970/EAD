@@ -20,5 +20,6 @@ namespace mongodb_dotnet_example.Models
         public DateTime Arrival_Time { get; set; }
 
         public string Status { get; set; }
+        public string NIC { get; internal set; }
     }
 }

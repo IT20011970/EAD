@@ -38,7 +38,7 @@ namespace mongodb_dotnet_example.Controllers
             {
                 var trainreturn = _backendService.CreateReservation(reservation);
 
-                return CreatedAtRoute("GetGame", new { id = reservation.NIC.ToString() }, reservation);
+                return CreatedAtRoute("GetGame", new { id = reservation.NIC.ToString() }, trainreturn);
             }
             catch (Exceptions.InvalidTrainException ex)
             {
