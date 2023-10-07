@@ -30,6 +30,13 @@ namespace mongodb_dotnet_example.Controllers
             return CreatedAtRoute("GetGame", new { id = train.Id.ToString() }, train);
         }
 
+        [HttpGet]
+        [Route("Train")]
+        public ActionResult<List<Train>> GetTrain()
+        {
+            return _backendService.GetTrain();
+        }
+
         [HttpPost]
         [Route("Reservation")]
         public ActionResult<Reservation> CreateReservation(Reservation reservation)
@@ -55,6 +62,12 @@ namespace mongodb_dotnet_example.Controllers
             }
 
         }
+        [HttpGet]
+        [Route("Reservation")]
+        public ActionResult<List<Reservation>> GetReservation()
+        {
+            return _backendService.GetReservation();
+        }
 
         [HttpGet]
         public ActionResult<List<Users>> Get()
@@ -67,6 +80,13 @@ namespace mongodb_dotnet_example.Controllers
         public ActionResult<List<Users>> GetTravellers()
         {
             return _userService.GetTravellers();
+        }
+
+        [HttpGet]
+        [Route("travellerprofile")]
+        public ActionResult<List<Users>> GetTravellerProfile()
+        {
+            return _userService.GetTravellerProfile();
         }
 
         [HttpGet("{id}", Name = "GetGame")]
@@ -124,9 +144,10 @@ namespace mongodb_dotnet_example.Controllers
                 return NotFound();
             }
 
-            _userService.Update(id, gameIn);
+            var User= _userService.Update(id, gameIn);
+            return Ok(User);
 
-            return NoContent();
+          
         }
 
         [HttpDelete()]

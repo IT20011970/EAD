@@ -20,9 +20,12 @@ namespace mongodb_dotnet_example.Services
             _users = database.GetCollection<Users>(settings.GamesCollectionName);
         }
         public List<Users> Get() => _users.Find(game => true).ToList();
+
+       
         public List<Users> GetTravellers()
         {
             var filter = Builders<Users>.Filter.And(
+                Builders<Users>.Filter.Eq(user => user.Role, "traveller"),
                 Builders<Users>.Filter.Eq(user => user.Status, "inactive"),
                 Builders<Users>.Filter.Eq(user => user.IsApprove, false)
             );
@@ -30,6 +33,16 @@ namespace mongodb_dotnet_example.Services
             var users = _users.Find(filter).ToList();
             return users;
         }
+
+        public List<Users> GetTravellerProfile()
+        {
+            var filter = Builders<Users>.Filter.And(
+               Builders<Users>.Filter.Eq(user => user.Role, "traveller")
+           );
+            var users = _users.Find(filter).ToList();
+            return users;
+        }
+
 
         public Users Login(Users user)
         {
@@ -61,7 +74,12 @@ namespace mongodb_dotnet_example.Services
             return game;
         }
 
-        public void Update(string NIC, Users updatedGame) => _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
+        public Users Update(string NIC, Users updatedGame)
+        {
+            updatedGame.NIC = NIC; 
+            _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
+            return updatedGame;
+        }
 
         public void Delete(Users gameForDeletion) => _users.DeleteOne(game => game.NIC == gameForDeletion.NIC);
 

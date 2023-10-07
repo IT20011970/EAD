@@ -7,6 +7,8 @@ namespace mongodb_dotnet_example.Models
 
     public class Users
     {
+        internal string _id;
+
         [BsonId]
         public string NIC { get; set; }
 

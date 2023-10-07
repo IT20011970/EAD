@@ -24,6 +24,10 @@ namespace mongodb_dotnet_example.Services
             _reservation = database.GetCollection<Reservation>(settings.ReservationCollectionName);
         }
         public List<Users> Get() => _users.Find(game => true).ToList();
+
+        public List<Reservation> GetReservation() => _reservation.Find(game => true).ToList();
+
+        public List<Train> GetTrain() => _train.Find(game => true).ToList();
         public List<Users> GetTravellers()
         {
             var filter = Builders<Users>.Filter.And(
