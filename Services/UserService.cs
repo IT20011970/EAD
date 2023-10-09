@@ -26,8 +26,18 @@ namespace mongodb_dotnet_example.Services
         {
             var filter = Builders<Users>.Filter.And(
                 Builders<Users>.Filter.Eq(user => user.Role, "traveller"),
-                Builders<Users>.Filter.Eq(user => user.Status, "inactive"),
-                Builders<Users>.Filter.Eq(user => user.IsApprove, false)
+                Builders<Users>.Filter.Eq(user => user.Status, "inactive")
+            );
+
+            var users = _users.Find(filter).ToList();
+            return users;
+        }
+
+        public List<Users> GetActiveTravellers()
+        {
+            var filter = Builders<Users>.Filter.And(
+                Builders<Users>.Filter.Eq(user => user.Role, "traveller"),
+                Builders<Users>.Filter.Eq(user => user.Status, "active")  
             );
 
             var users = _users.Find(filter).ToList();
@@ -52,11 +62,19 @@ namespace mongodb_dotnet_example.Services
             {
                 if (DBUser.Password == user.Password)
                 {
-                    return DBUser; // Authentication successful, return the user object
+                    if (DBUser.Role != "traveller")
+                    {
+                        return DBUser; // Authentication successful, return the user object
+                    }
+                    else
+                    {
+                        throw new CustomException("Traveller not allowed to login");
+                    }
+                    
                 }
                 else
                 {
-                    throw new InvalidPasswordException("Invalid password");// Password mismatch, handle the error (e.g., throw an exception)
+                    throw new CustomException("Invalid password");// Password mismatch, handle the error (e.g., throw an exception)
                 }
             }
             else
@@ -80,6 +98,8 @@ namespace mongodb_dotnet_example.Services
             _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
             return updatedGame;
         }
+
+      
 
         public void Delete(Users gameForDeletion) => _users.DeleteOne(game => game.NIC == gameForDeletion.NIC);
 

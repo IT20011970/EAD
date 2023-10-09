@@ -36,7 +36,51 @@ namespace mongodb_dotnet_example.Controllers
         {
             return _backendService.GetTrain();
         }
+        [HttpPut]
+        [Route("Train")]
+        public IActionResult UpdateTrain(string id, Train gameIn)
+        {
 
+            var game = _backendService.GetTrainById(id);
+
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            var User = _backendService.UpdateTrain(id, gameIn);
+            return Ok(User);
+        }
+        [HttpPut]
+        [Route("CancelTrain")]
+        public IActionResult CancelTrain(string id, Train gameIn)
+        {
+
+            try
+            {
+                var game = _backendService.GetTrainById(id);
+
+                if (game == null)
+                {
+                    return NotFound();
+                }
+
+                var User = _backendService.CancelTrain(id, gameIn);
+                return Ok(User);
+            }
+            catch (Exceptions.InvalidReservation ex)
+            {
+                return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
+
+
+
+        }
         [HttpPost]
         [Route("Reservation")]
         public ActionResult<Reservation> CreateReservation(Reservation reservation)
@@ -55,6 +99,10 @@ namespace mongodb_dotnet_example.Controllers
             {
                 return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
             }
+            catch (Exceptions.InvalidReservation ex)
+            {
+                return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
+            }
             catch (Exception ex)
             {
                 // Handle other exceptions here if needed
@@ -69,6 +117,35 @@ namespace mongodb_dotnet_example.Controllers
             return _backendService.GetReservation();
         }
 
+
+        [HttpPut]
+        [Route("CancelReservation")]
+        public IActionResult CalcelReservation(string id, Reservation gameIn)
+        {
+            try
+            {
+                var game = _backendService.GetReservationByID(gameIn.NIC);
+
+                if (game == null)
+                {
+                    return NotFound();
+                }
+                var User = _backendService.CancelReservation(id, game);
+                return Ok(User);
+            }
+
+            catch (Exceptions.InvalidTrainException ex)
+            {
+                return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
+
+        }
+
         [HttpGet]
         public ActionResult<List<Users>> Get()
         {
@@ -80,6 +157,13 @@ namespace mongodb_dotnet_example.Controllers
         public ActionResult<List<Users>> GetTravellers()
         {
             return _userService.GetTravellers();
+        }
+
+        [HttpGet]
+        [Route("activetraveller")]
+        public ActionResult<List<Users>> GetActiveTravellers()
+        {
+            return _userService.GetActiveTravellers();
         }
 
         [HttpGet]
@@ -119,7 +203,7 @@ namespace mongodb_dotnet_example.Controllers
                 var result = _userService.Login(users);
                 return Ok(result);
             }
-            catch (Exceptions.InvalidPasswordException ex)
+            catch (Exceptions.CustomException ex)
             {
                 return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
             }
@@ -143,10 +227,8 @@ namespace mongodb_dotnet_example.Controllers
             {
                 return NotFound();
             }
-
             var User= _userService.Update(id, gameIn);
             return Ok(User);
-
           
         }
 
