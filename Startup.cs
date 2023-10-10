@@ -72,6 +72,7 @@ namespace mongodb_dotnet_example
             }
 
             app.UseHttpsRedirection();
+           
 
             app.UseRouting();
             app.UseCors("AllowSpecificOrigin"); // apply the CORS policy
@@ -79,7 +80,10 @@ namespace mongodb_dotnet_example
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
+                );
             });
         }
     }

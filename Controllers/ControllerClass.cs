@@ -27,7 +27,7 @@ namespace mongodb_dotnet_example.Controllers
         {
            var trainreturn = _backendService.Create(train);
 
-            return CreatedAtRoute("GetGame", new { id = train.Id.ToString() }, train);
+            return CreatedAtRoute(new { id = train.Id }, train);
         }
 
         [HttpGet]
