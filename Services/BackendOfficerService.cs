@@ -25,6 +25,7 @@ namespace mongodb_dotnet_example.Services
             _users = database.GetCollection<Users>(settings.UserCollectionName);
             _train = database.GetCollection<Train>(settings.TrainCollectionName);
             _reservation = database.GetCollection<Reservation>(settings.ReservationCollectionName);
+            _history = database.GetCollection<History>(settings.HistoryCollectionName);
         }
         public List<Users> Get() => _users.Find(game => true).ToList();
 
@@ -179,13 +180,13 @@ namespace mongodb_dotnet_example.Services
                         {
                             History ht = new History();
                             ht.NIC = reservation.NIC;
-                            ht.Departre_Station = tr.Depatre_Station;
-                            ht.Arrival_Station = tr.Arrival_Station;
-                            ht.Departre_Time = tr.Depatre_Time;
-                            ht.Arrival_Time = tr.Arrival_Time;
-                            ht.Reserverved_Time = reservation.TodayDate;                       
-                            ht.Id = tr.Id;
-                            ht.Number=tr.Number;
+                            ht.Departre_Station = train.Depatre_Station;
+                            ht.Arrival_Station = train.Arrival_Station;
+                            ht.Departre_Time = train.Depatre_Time;
+                            ht.Arrival_Time = train.Arrival_Time;
+                            ht.Reserverved_Time = reservation.TodayDate;
+                            ht.TrainId = train.Id;
+                            ht.Number = train.Number;
                             _history.InsertOne(ht);
                             _reservation.InsertOne(reservation);
                             return reservation;
@@ -242,10 +243,10 @@ namespace mongodb_dotnet_example.Services
                                     ht.Departre_Time = tr.Depatre_Time;
                                     ht.Arrival_Time = tr.Arrival_Time;
                                     ht.Reserverved_Time = reservation.TodayDate;
-                                    ht.Id = tr.Id;
+                                    ht.TrainId = tr.Id;
                                     ht.Number = tr.Number;
                                     _history.InsertOne(ht);
-                                    _reservation.InsertOne(reservation);
+                                   
 
                                     return updatedReservation;
                                 }
