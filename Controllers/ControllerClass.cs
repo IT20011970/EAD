@@ -110,11 +110,11 @@ namespace mongodb_dotnet_example.Controllers
             }
 
         }
-        [HttpGet]
-        [Route("Reservation")]
-        public ActionResult<List<Reservation>> GetReservation()
+        [HttpGet("Reservation/{id}")]
+        // [Route("Reservation")]
+        public ActionResult<Reservation> GetReservation(String id)
         {
-            return _backendService.GetReservation();
+            return _backendService.GetReservationByID(id);
         }
 
 
