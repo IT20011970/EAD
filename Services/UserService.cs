@@ -62,7 +62,7 @@ namespace mongodb_dotnet_example.Services
             {
                 if (DBUser.Password == user.Password)
                 {
-                    if (DBUser.Role != "traveller")
+                    if (DBUser.IsApprove)
                     {
                         return DBUser; // Authentication successful, return the user object
                     }
@@ -94,8 +94,12 @@ namespace mongodb_dotnet_example.Services
 
         public Users Update(string NIC, Users updatedGame)
         {
-            updatedGame.NIC = NIC; 
-            _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
+            updatedGame.NIC = NIC;
+            var DBUser = Get(NIC);
+            DBUser.Name = updatedGame.Name;
+            DBUser.Address = updatedGame.Address;
+            DBUser.ContactNumber = updatedGame.ContactNumber;
+            _users.ReplaceOne(game => game.NIC == NIC, DBUser);
             return updatedGame;
         }
 
