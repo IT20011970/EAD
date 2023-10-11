@@ -19,7 +19,7 @@ namespace mongodb_dotnet_example.Services
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _users = database.GetCollection<Users>(settings.GamesCollectionName);
+            _users = database.GetCollection<Users>(settings.UserCollectionName);
             _train = database.GetCollection<Train>(settings.TrainCollectionName);
             _reservation = database.GetCollection<Reservation>(settings.ReservationCollectionName);
         }

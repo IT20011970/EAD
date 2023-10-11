@@ -38,7 +38,7 @@ namespace mongodb_dotnet_example.Controllers
         }
         [HttpPut]
         [Route("Train")]
-        public IActionResult UpdateTrain(string id, Train gameIn)
+        public IActionResult UpdateTrain(string id, Train train)
         {
 
             var game = _backendService.GetTrainById(id);
@@ -48,12 +48,12 @@ namespace mongodb_dotnet_example.Controllers
                 return NotFound();
             }
 
-            var User = _backendService.UpdateTrain(id, gameIn);
+            var User = _backendService.UpdateTrain(id, train);
             return Ok(User);
         }
         [HttpPut]
         [Route("CancelTrain")]
-        public IActionResult CancelTrain(string id, Train gameIn)
+        public IActionResult CancelTrain(string id, Train train)
         {
 
             try
@@ -65,7 +65,7 @@ namespace mongodb_dotnet_example.Controllers
                     return NotFound();
                 }
 
-                var User = _backendService.CancelTrain(id, gameIn);
+                var User = _backendService.CancelTrain(id, train);
                 return Ok(User);
             }
             catch (Exceptions.InvalidReservation ex)
@@ -89,7 +89,7 @@ namespace mongodb_dotnet_example.Controllers
             {
                 var trainreturn = _backendService.CreateReservation(reservation);
 
-                return CreatedAtRoute("GetGame", new { id = reservation.NIC.ToString() }, trainreturn);
+                return CreatedAtRoute(new { id = reservation.NIC.ToString() }, trainreturn);
             }
             catch (Exceptions.InvalidTrainException ex)
             {
@@ -110,27 +110,27 @@ namespace mongodb_dotnet_example.Controllers
             }
 
         }
-        [HttpGet("Reservation/{id}")]
-        // [Route("Reservation")]
-        public ActionResult<Reservation> GetReservation(String id)
+        [HttpGet]
+        [Route("Reservation")]
+        public ActionResult<List<Reservation>> GetReservation()
         {
-            return _backendService.GetReservationByID(id);
+            return _backendService.GetReservation();
         }
 
 
         [HttpPut]
         [Route("CancelReservation")]
-        public IActionResult CalcelReservation(string id, Reservation gameIn)
+        public IActionResult CalcelReservation(string id, Reservation reservation)
         {
             try
             {
-                var game = _backendService.GetReservationByID(gameIn.NIC);
+                var reservationDb = _backendService.GetReservationByID(reservation.NIC);
 
-                if (game == null)
+                if (reservationDb == null)
                 {
                     return NotFound();
                 }
-                var User = _backendService.CancelReservation(id, game);
+                var User = _backendService.CancelReservation(id, reservationDb);
                 return Ok(User);
             }
 
@@ -173,7 +173,7 @@ namespace mongodb_dotnet_example.Controllers
             return _userService.GetTravellerProfile();
         }
 
-        [HttpGet("{id}", Name = "GetGame")]
+        [HttpGet("{id}")]
         public ActionResult<Users> Get(string id)
         {
             var users = _userService.Get(id);

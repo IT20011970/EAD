@@ -17,7 +17,7 @@ namespace mongodb_dotnet_example.Services
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _users = database.GetCollection<Users>(settings.GamesCollectionName);
+            _users = database.GetCollection<Users>(settings.UserCollectionName);
         }
         public List<Users> Get() => _users.Find(game => true).ToList();
 
@@ -62,13 +62,21 @@ namespace mongodb_dotnet_example.Services
             {
                 if (DBUser.Password == user.Password)
                 {
-                    if (DBUser.IsApprove)
+                    if (DBUser.Role != "traveller")
                     {
                         return DBUser; // Authentication successful, return the user object
                     }
                     else
                     {
-                        throw new CustomException("Traveller not allowed to login");
+                        if (DBUser.Status == "active")
+                        {
+                            return DBUser;
+                        }
+                        else
+                        {
+                            throw new CustomException("Traveller not allowed to login");
+                        }
+                       
                     }
                     
                 }
@@ -94,19 +102,8 @@ namespace mongodb_dotnet_example.Services
 
         public Users Update(string NIC, Users updatedGame)
         {
-            updatedGame.NIC = NIC;
-            var DBUser = Get(NIC);
-            if (updatedGame.IsApprove)
-            {
-                DBUser.Name = updatedGame.Name;
-                DBUser.Address = updatedGame.Address;
-                DBUser.ContactNumber = updatedGame.ContactNumber;
-            }
-            else
-            {
-                DBUser.IsApprove = updatedGame.IsApprove;
-            }
-            _users.ReplaceOne(game => game.NIC == NIC, DBUser);
+            updatedGame.NIC = NIC; 
+            _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
             return updatedGame;
         }
 
