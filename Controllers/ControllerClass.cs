@@ -10,7 +10,7 @@ namespace mongodb_dotnet_example.Controllers
     [ApiController]
     public class ControllerClass : ControllerBase
     {
-      
+
 
         private readonly UserService _userService;
         private readonly BackendOfficerService _backendService;
@@ -25,7 +25,7 @@ namespace mongodb_dotnet_example.Controllers
         [Route("Train")]
         public ActionResult<Train> Create(Train train)
         {
-           var trainreturn = _backendService.Create(train);
+            var trainreturn = _backendService.Create(train);
 
             return CreatedAtRoute(new { id = train.Id }, train);
         }
@@ -117,6 +117,12 @@ namespace mongodb_dotnet_example.Controllers
             return _backendService.GetReservation();
         }
 
+        [HttpGet("Reservation/{id}")]
+        public ActionResult<Reservation> GetReservation(String id)
+        {
+            return _backendService.GetReservationByID(id);
+        }
+
 
         [HttpPut]
         [Route("CancelReservation")]
@@ -149,11 +155,11 @@ namespace mongodb_dotnet_example.Controllers
         [HttpGet]
         public ActionResult<List<Users>> Get()
         {
-           return _userService.Get();
+            return _userService.Get();
         }
 
         [HttpGet]
-        [Route("traveller")] 
+        [Route("traveller")]
         public ActionResult<List<Users>> GetTravellers()
         {
             return _userService.GetTravellers();
@@ -195,7 +201,7 @@ namespace mongodb_dotnet_example.Controllers
         }
 
         [HttpPost]
-        [Route("login")] 
+        [Route("login")]
         public ActionResult<Users> Login(Users users)
         {
             try
@@ -227,9 +233,9 @@ namespace mongodb_dotnet_example.Controllers
             {
                 return NotFound();
             }
-            var User= _userService.Update(id, gameIn);
+            var User = _userService.Update(id, gameIn);
             return Ok(User);
-          
+
         }
 
         [HttpDelete()]
