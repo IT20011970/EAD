@@ -96,9 +96,16 @@ namespace mongodb_dotnet_example.Services
         {
             updatedGame.NIC = NIC;
             var DBUser = Get(NIC);
-            DBUser.Name = updatedGame.Name;
-            DBUser.Address = updatedGame.Address;
-            DBUser.ContactNumber = updatedGame.ContactNumber;
+            if (updatedGame.IsApprove)
+            {
+                DBUser.Name = updatedGame.Name;
+                DBUser.Address = updatedGame.Address;
+                DBUser.ContactNumber = updatedGame.ContactNumber;
+            }
+            else
+            {
+                DBUser.IsApprove = updatedGame.IsApprove;
+            }
             _users.ReplaceOne(game => game.NIC == NIC, DBUser);
             return updatedGame;
         }
