@@ -163,6 +163,12 @@ namespace mongodb_dotnet_example.Services
                     var train = _train.Find(t => t.Id == tr.Id).FirstOrDefault();
                     if (train != null&& train.Status=="active")
                     {
+                        tr.Number = train.Number;
+                        tr.Depatre_Station = train.Depatre_Station;
+                        tr.Arrival_Station = train.Arrival_Station;
+                        tr.Depatre_Time = train.Depatre_Time;
+                        tr.Arrival_Time = train.Arrival_Time;
+                        tr.Status = train.Status;
                         DateTime trainArrivalTime = train.Arrival_Time;
                         double differenceInDays = (trainArrivalTime - reservation.TodayDate).TotalDays;
 
@@ -195,7 +201,12 @@ namespace mongodb_dotnet_example.Services
                         var train = _train.Find(t => t.Id == tr.Id).FirstOrDefault();
                         if (train != null && train.Status == "active")
                         {
-
+                            tr.Number = train.Number;
+                            tr.Depatre_Station = train.Depatre_Station;
+                            tr.Arrival_Station = train.Arrival_Station;
+                            tr.Depatre_Time = train.Depatre_Time;
+                            tr.Arrival_Time = train.Arrival_Time;
+                            tr.Status = train.Status;
                             DateTime trainArrivalTime = train.Arrival_Time;
                             double differenceInDays = (trainArrivalTime - reservation.TodayDate).TotalDays;
 
