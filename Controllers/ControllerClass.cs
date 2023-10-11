@@ -41,9 +41,9 @@ namespace mongodb_dotnet_example.Controllers
         public IActionResult UpdateTrain(string id, Train train)
         {
 
-            var game = _backendService.GetTrainById(id);
+            var trainDb = _backendService.GetTrainById(id);
 
-            if (game == null)
+            if (trainDb == null)
             {
                 return NotFound();
             }

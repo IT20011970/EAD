@@ -6,6 +6,8 @@ using System;
 using mongodb_dotnet_example.Exceptions;
 using MongoDB.Bson;
 using DnsClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Numerics;
 
 namespace mongodb_dotnet_example.Services
 {
@@ -14,6 +16,7 @@ namespace mongodb_dotnet_example.Services
         private readonly IMongoCollection<Users> _users;
         private readonly IMongoCollection<Train> _train;
         private readonly IMongoCollection<Reservation> _reservation;
+        private readonly IMongoCollection<History> _history;
         public BackendOfficerService(IDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
@@ -174,6 +177,16 @@ namespace mongodb_dotnet_example.Services
 
                         if (differenceInDays > 30)
                         {
+                            History ht = new History();
+                            ht.NIC = reservation.NIC;
+                            ht.Departre_Station = tr.Depatre_Station;
+                            ht.Arrival_Station = tr.Arrival_Station;
+                            ht.Departre_Time = tr.Depatre_Time;
+                            ht.Arrival_Time = tr.Arrival_Time;
+                            ht.Reserverved_Time = reservation.TodayDate;                       
+                            ht.Id = tr.Id;
+                            ht.Number=tr.Number;
+                            _history.InsertOne(ht);
                             _reservation.InsertOne(reservation);
                             return reservation;
                         }
@@ -221,6 +234,19 @@ namespace mongodb_dotnet_example.Services
                                     var update = Builders<Reservation>.Update.Push(r => r.trains, tr);
                                     _reservation.UpdateOne(filter, update);
                                     Reservation updatedReservation = _reservation.Find(t => t.NIC == reservation.NIC).FirstOrDefault();
+
+                                    History ht = new History();
+                                    ht.NIC = reservation.NIC;
+                                    ht.Departre_Station = tr.Depatre_Station;
+                                    ht.Arrival_Station = tr.Arrival_Station;
+                                    ht.Departre_Time = tr.Depatre_Time;
+                                    ht.Arrival_Time = tr.Arrival_Time;
+                                    ht.Reserverved_Time = reservation.TodayDate;
+                                    ht.Id = tr.Id;
+                                    ht.Number = tr.Number;
+                                    _history.InsertOne(ht);
+                                    _reservation.InsertOne(reservation);
+
                                     return updatedReservation;
                                 }
                                 else
@@ -247,6 +273,16 @@ namespace mongodb_dotnet_example.Services
 
                                     // Update the reservation in the database
                                     _reservation.UpdateOne(filter, update);
+
+                                    var filter2 = Builders<History>.Filter.Eq(h => h.NIC, reservation.NIC); // Assuming NIC is the unique identifier for your documents
+                                    var update2 = Builders<History>.Update
+                                        .Set(h => h.Departre_Station, tr.Depatre_Station)
+                                        .Set(h => h.Arrival_Station, tr.Arrival_Station)
+                                        .Set(h => h.Departre_Time, tr.Depatre_Time)
+                                        .Set(h => h.Arrival_Time, tr.Arrival_Time);                                   
+                                       
+
+                                    var result = _history.UpdateOne(filter2, update2);
 
                                     // Fetch and return the updated reservation
                                     Reservation updatedReservation = _reservation.Find(r => r.NIC == reservation.NIC).FirstOrDefault();

@@ -19,7 +19,7 @@ namespace mongodb_dotnet_example.Services
 
             _users = database.GetCollection<Users>(settings.UserCollectionName);
         }
-        public List<Users> Get() => _users.Find(game => true).ToList();
+        public List<Users> Get() => _users.Find(users => true).ToList();
 
        
         public List<Users> GetTravellers()
@@ -92,24 +92,24 @@ namespace mongodb_dotnet_example.Services
 
             return null;
         }
-        public Users Get(string id) => _users.Find(game => game.NIC == id).FirstOrDefault();
+        public Users Get(string id) => _users.Find(users => users.NIC == id).FirstOrDefault();
 
-        public Users Create(Users game)
+        public Users Create(Users user)
         {
-            _users.InsertOne(game);
-            return game;
+            _users.InsertOne(user);
+            return user;
         }
 
-        public Users Update(string NIC, Users updatedGame)
+        public Users Update(string NIC, Users updatedUser)
         {
-            updatedGame.NIC = NIC; 
-            _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
-            return updatedGame;
+            updatedUser.NIC = NIC; 
+            _users.ReplaceOne(game => game.NIC == NIC, updatedUser);
+            return updatedUser;
         }
 
       
 
-        public void Delete(Users gameForDeletion) => _users.DeleteOne(game => game.NIC == gameForDeletion.NIC);
+        public void Delete(Users userForDeletion) => _users.DeleteOne(game => game.NIC == userForDeletion.NIC);
 
         public void Delete(string id) => _users.DeleteOne(game => game.NIC == id);
     }

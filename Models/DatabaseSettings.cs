@@ -6,6 +6,7 @@
         public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }
         public string TrainCollectionName { get; set; }
+        public string HistoryCollectionName { get; set; }
         public string ReservationCollectionName { get; set; }
     }
 
@@ -15,6 +16,7 @@
         string ReservationCollectionName { get; set; }
         string TrainCollectionName { get; set; }
         string ConnectionString { get; set; }
+        string HistoryCollectionName { get; set; }
         string DatabaseName { get; set; }
     }
 }
