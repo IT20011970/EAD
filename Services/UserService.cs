@@ -102,12 +102,20 @@ namespace mongodb_dotnet_example.Services
 
         public Users Update(string NIC, Users updatedUser)
         {
-            updatedUser.NIC = NIC; 
-            _users.ReplaceOne(game => game.NIC == NIC, updatedUser);
+            var user = _users.Find(userObj => userObj.NIC == NIC).FirstOrDefault();
+            updatedUser.NIC = NIC;
+            if (updatedUser.Status == "active") { 
+                user.Name = updatedUser.Name;
+                user.Address = updatedUser.Address;
+                user.ContactNumber = updatedUser.ContactNumber;
+            }else{
+                user.Status = updatedUser.Status;
+            }
+            _users.ReplaceOne(userObj => userObj.NIC == NIC, user);
             return updatedUser;
         }
 
-      
+
 
         public void Delete(Users userForDeletion) => _users.DeleteOne(game => game.NIC == userForDeletion.NIC);
 
