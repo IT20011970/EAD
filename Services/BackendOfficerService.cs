@@ -31,7 +31,7 @@ namespace mongodb_dotnet_example.Services
 
         public List<Reservation> GetReservation() => _reservation.Find(game => true).ToList();
 
-        public List<History> GetReservationHistory() => _history.Find(game => true).ToList();
+        public List<History> GetReservationHistoryByID(string id) => _history.Find(userObj => userObj.NIC == id).ToList();
 
         public Reservation GetReservationByID(string id) => _reservation.Find(game => game.NIC == id).FirstOrDefault();
         public List<Train> GetTrain() => _train.Find(game => true).ToList();

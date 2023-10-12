@@ -112,10 +112,10 @@ namespace mongodb_dotnet_example.Controllers
 
         }
         [HttpGet]
-        [Route("History")]
-        public ActionResult<List<History>> GetReservationHistory()
+        [Route("History/{id}")]
+        public ActionResult<List<History>> GetReservationHistory(String id)
         {
-            return _backendService.GetReservationHistory();
+            return _backendService.GetReservationHistoryByID(id);
         }
         [HttpGet]
         [Route("Reservation")]
