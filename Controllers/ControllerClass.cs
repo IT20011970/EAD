@@ -112,6 +112,12 @@ namespace mongodb_dotnet_example.Controllers
 
         }
         [HttpGet]
+        [Route("History")]
+        public ActionResult<List<History>> GetReservationHistory()
+        {
+            return _backendService.GetReservationHistory();
+        }
+        [HttpGet]
         [Route("Reservation")]
         public ActionResult<List<Reservation>> GetReservation()
         {
