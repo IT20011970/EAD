@@ -133,6 +133,7 @@ namespace mongodb_dotnet_example.Controllers
 
 
         }
+
         [HttpGet] // Specifies that this method handles HTTP GET requests
         [Route("History")] // Specifies the endpoint route for this method
         public ActionResult<List<History>> GetReservationHistory()
@@ -140,6 +141,13 @@ namespace mongodb_dotnet_example.Controllers
             // Call the GetReservationHistory method from the _backendService to retrieve reservation history
             // and return the result as an ActionResult containing a list of History objects.
             return _backendService.GetReservationHistory();
+        }
+
+        [HttpGet]
+        [Route("History/{id}")]
+        public ActionResult<List<History>> GetReservationHistory(String id)
+        {
+            return _backendService.GetReservationHistoryByID(id);
         }
 
         [HttpGet]
