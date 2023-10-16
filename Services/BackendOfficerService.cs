@@ -27,14 +27,14 @@ namespace mongodb_dotnet_example.Services
             _reservation = database.GetCollection<Reservation>(settings.ReservationCollectionName);
             _history = database.GetCollection<History>(settings.HistoryCollectionName);
         }
-        public List<Users> Get() => _users.Find(game => true).ToList();
+        public List<Users> Get() => _users.Find(train => true).ToList();
 
-        public List<Reservation> GetReservation() => _reservation.Find(game => true).ToList();
+        public List<Reservation> GetReservation() => _reservation.Find(train => true).ToList();
 
-        public List<History> GetReservationHistory() => _history.Find(game => true).ToList();
+        public List<History> GetReservationHistory() => _history.Find(train => true).ToList(); //Return history data
 
-        public Reservation GetReservationByID(string id) => _reservation.Find(game => game.NIC == id).FirstOrDefault();
-        public List<Train> GetTrain() => _train.Find(game => true).ToList();
+        public Reservation GetReservationByID(string id) => _reservation.Find(train => train.NIC == id).FirstOrDefault();
+        public List<Train> GetTrain() => _train.Find(train => true).ToList();
         public List<Users> GetTravellers()
         {
             var filter = Builders<Users>.Filter.And(
@@ -46,33 +46,31 @@ namespace mongodb_dotnet_example.Services
             return users;
         }
   
-        public Train GetTrainById(string id) => _train.Find(game => game.Id == id).FirstOrDefault();
+        public Train GetTrainById(string id) => _train.Find(train => train.Id == id).FirstOrDefault(); //get train
 
-        public Train UpdateTrain(string NIC, Train updatedGame)
+        public Train UpdateTrain(string NIC, Train updatedTrain)
         {
 
-            var filter = Builders<Train>.Filter.Eq(u => u.Id, NIC);
+            var filter = Builders<Train>.Filter.Eq(u => u.Id, NIC); //filter train
 
             var update = Builders<Train>.Update
-                .Set(u => u.Arrival_Time, updatedGame.Arrival_Time)
-                .Set(u => u.Depatre_Time, updatedGame.Depatre_Time)
-             .Set(u => u.Status, updatedGame.Status);
-            _train.UpdateOne(filter, update);
+                .Set(u => u.Arrival_Time, updatedTrain.Arrival_Time) //update arrival time
+                .Set(u => u.Depatre_Time, updatedTrain.Depatre_Time)//update depature time
+             .Set(u => u.Status, updatedTrain.Status);
+            _train.UpdateOne(filter, update); //update
 
-           // updatedGame.Id = NIC;
-           // _train.ReplaceOne(game => game.Id == NIC, updatedGame);
-            return updatedGame;
+            return updatedTrain;
         }
-        public Train CancelTrain(string NIC, Train updatedGame)
+        public Train CancelTrain(string NIC, Train updatedTrain)
         {
             var reservation = GetReservation();
             bool isthere = false;
            
-            foreach (Reservation res in reservation)
+            foreach (Reservation res in reservation) //check reservatins before cancel
             {
-                foreach (Train train in res.trains)
+                foreach (Train train in res.trains) 
                 {
-                    if (train.Id == NIC)
+                    if (train.Id == NIC) //if reservations there
                     {
                         isthere = true;
                         break;
@@ -86,17 +84,15 @@ namespace mongodb_dotnet_example.Services
                 }
             }
 
-            if (!isthere)
+            if (!isthere) // else
             {
                 var filter = Builders<Train>.Filter.Eq(u => u.Id, NIC);
 
                 var update = Builders<Train>.Update
-                    .Set(u => u.Status, updatedGame.Status);
+                    .Set(u => u.Status, updatedTrain.Status);
 
                 _train.UpdateOne(filter, update);
                 return null;
-                // updatedGame.Id = NIC;
-                // _train.ReplaceOne(game => game.Id == NIC, updatedGame);
             }
             else
             {
@@ -130,22 +126,22 @@ namespace mongodb_dotnet_example.Services
 
             return null;
         }
-        public Users Get(string id) => _users.Find(game => game.NIC == id).FirstOrDefault();
+        public Users Get(string id) => _users.Find(train => train.NIC == id).FirstOrDefault();
 
         public Train Create(Train train)
         {
-            _train.InsertOne(train);
-            return train;
+            _train.InsertOne(train); //Insert train
+            return train; //retrun data
         }
         public Reservation CancelReservation(string id,Reservation reservation)
         {
-            if (reservation.trains.Count > 0)
+            if (reservation.trains.Count > 0) // Check whether the request includes trains
             {
-                var trainToRemove = reservation.trains.FirstOrDefault(t => t.Id == id);
+                var trainToRemove = reservation.trains.FirstOrDefault(t => t.Id == id);// Check the is available in database
 
                 if (trainToRemove != null)
                 {         
-                    reservation.trains.Remove(trainToRemove);
+                    reservation.trains.Remove(trainToRemove);// Remove booking
                     var filter = Builders<Reservation>.Filter.Eq(r => r.NIC, reservation.NIC);
                     _reservation.ReplaceOne(filter, reservation);
                     return reservation;
@@ -160,15 +156,16 @@ namespace mongodb_dotnet_example.Services
         }
         public Reservation CreateReservation(Reservation reservation)
         {
-            var DBReservation = _reservation.Find(game => game.NIC == reservation.NIC).FirstOrDefault();
+            var DBReservation = _reservation.Find(train => train.NIC == reservation.NIC).FirstOrDefault();// Get reservation if esisting
 
             if (DBReservation == null)
             {
                 foreach (Train tr in reservation.trains)
                 {
-                    var train = _train.Find(t => t.Id == tr.Id).FirstOrDefault();
+                    var train = _train.Find(t => t.Id == tr.Id).FirstOrDefault();// Get the train respect to the train id
                     if (train != null&& train.Status=="active")
                     {
+                        // assign train values
                         tr.Number = train.Number;
                         tr.Depatre_Station = train.Depatre_Station;
                         tr.Arrival_Station = train.Arrival_Station;
@@ -178,7 +175,7 @@ namespace mongodb_dotnet_example.Services
                         DateTime trainArrivalTime = train.Arrival_Time;
                         double differenceInDays = (trainArrivalTime - reservation.TodayDate).TotalDays;
 
-                        if (differenceInDays > 30)
+                        if (differenceInDays > 30)// Check whether it is exceeding 30 days
                         {
                             History ht = new History();
                             ht.NIC = reservation.NIC;
@@ -210,12 +207,12 @@ namespace mongodb_dotnet_example.Services
             }
             else
             {
-                if (DBReservation.trains.Count < 4)
+                if (DBReservation.trains.Count < 4)// Check whether the bookings count not exceeding 4
                 {
                     foreach (Train tr in reservation.trains)
                     {
                         var train = _train.Find(t => t.Id == tr.Id).FirstOrDefault();
-                        if (train != null && train.Status == "active")
+                        if (train != null && train.Status == "active")// Check if train is valid
                         {
                             tr.Number = train.Number;
                             tr.Depatre_Station = train.Depatre_Station;
@@ -230,7 +227,7 @@ namespace mongodb_dotnet_example.Services
                             if (!trainExistsInDB)
                             {
 
-                                if (differenceInDays > 30)
+                                if (differenceInDays > 30)// Check whether it is exceeding 30 days
                                 {
                                     reservation.trains.Add(tr);
                                     var filter = Builders<Reservation>.Filter.Eq(r => r.NIC, DBReservation.NIC);
@@ -261,7 +258,7 @@ namespace mongodb_dotnet_example.Services
                             }
                             else
                             {
-                                if (differenceInDays > 4)
+                                if (differenceInDays > 4)// Check whether it is exceeding 4 days
                                 {
 
                                     foreach (var t in DBReservation.trains)
@@ -320,10 +317,10 @@ namespace mongodb_dotnet_example.Services
 
 
 
-        public void Update(string NIC, Users updatedGame) => _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
+        public void Update(string NIC, Users user) => _users.ReplaceOne(user => user.NIC == NIC, user);
 
-        public void Delete(Users gameForDeletion) => _users.DeleteOne(game => game.NIC == gameForDeletion.NIC);
+        public void Delete(Users user) => _users.DeleteOne(user => user.NIC == user.NIC);
 
-        public void Delete(string id) => _users.DeleteOne(game => game.NIC == id);
+        public void Delete(string id) => _users.DeleteOne(user => user.NIC == id);
     }
 }

@@ -25,29 +25,32 @@ namespace mongodb_dotnet_example.Services
         public List<Users> GetTravellers()
         {
             var filter = Builders<Users>.Filter.And(
-                Builders<Users>.Filter.Eq(user => user.Role, "traveller"),
-                Builders<Users>.Filter.Eq(user => user.Status, "inactive")
+                Builders<Users>.Filter.Eq(user => user.Role, "traveller"), //filter traveller
+                 Builders<Users>.Filter.Eq(user => user.IsApprove, true),//filter isapproved
+                Builders<Users>.Filter.Eq(user => user.Status, "inactive")//filter status
             );
 
             var users = _users.Find(filter).ToList();
-            return users;
+            return users; //return object
         }
 
         public List<Users> GetActiveTravellers()
         {
             var filter = Builders<Users>.Filter.And(
-                Builders<Users>.Filter.Eq(user => user.Role, "traveller"),
-                Builders<Users>.Filter.Eq(user => user.Status, "active")  
+                Builders<Users>.Filter.Eq(user => user.Role, "traveller"),//filter traveller
+                 Builders<Users>.Filter.Eq(user => user.IsApprove, true),//filter isapproved
+                Builders<Users>.Filter.Eq(user => user.Status, "active")  //filter status
             );
 
             var users = _users.Find(filter).ToList();
-            return users;
+            return users;//return object
         }
 
         public List<Users> GetTravellerProfile()
         {
             var filter = Builders<Users>.Filter.And(
-               Builders<Users>.Filter.Eq(user => user.Role, "traveller")
+               Builders<Users>.Filter.Eq(user => user.Role, "traveller"),//filter traveller
+               Builders<Users>.Filter.Eq(user => user.IsApprove, true)//filter isapproved
            );
             var users = _users.Find(filter).ToList();
             return users;
@@ -56,11 +59,11 @@ namespace mongodb_dotnet_example.Services
 
         public Users Login(Users user)
         {
-            var DBUser = Get(user.NIC);
+            var DBUser = Get(user.NIC); // Check user
 
             if (DBUser != null)
             {
-                if (DBUser.Password == user.Password)
+                if (DBUser.Password == user.Password)// Validate password
                 {
                     if (DBUser.Role != "traveller")
                     {
@@ -68,13 +71,13 @@ namespace mongodb_dotnet_example.Services
                     }
                     else
                     {
-                        if (DBUser.Status == "active")
+                        if (DBUser.Status == "active"&& DBUser.IsApprove==true) //Check traveller status
                         {
                             return DBUser;
                         }
                         else
                         {
-                            throw new CustomException("Traveller not allowed to login");
+                            throw new CustomException("Traveller not allowed to login"); //Invalid traveller
                         }
                        
                     }
@@ -96,21 +99,32 @@ namespace mongodb_dotnet_example.Services
 
         public Users Create(Users user)
         {
-            _users.InsertOne(user);
-            return user;
+            var DBUser = Get(user.NIC); // Check user
+
+            if (DBUser == null)
+            {
+
+                _users.InsertOne(user); //Create new user
+                return user;
+            }
+            else
+            {
+                throw new CustomException("User already exists");// User already exists exception (e.g., throw an exception)
+            }
+            return null;
         }
 
-        public Users Update(string NIC, Users updatedUser)
+        public Users Update(string NIC, Users updatedUser) //update user
         {
             updatedUser.NIC = NIC; 
-            _users.ReplaceOne(game => game.NIC == NIC, updatedUser);
+            _users.ReplaceOne(train => train.NIC == NIC, updatedUser);
             return updatedUser;
         }
 
       
 
-        public void Delete(Users userForDeletion) => _users.DeleteOne(game => game.NIC == userForDeletion.NIC);
+        public void Delete(Users userForDeletion) => _users.DeleteOne(train => train.NIC == userForDeletion.NIC);
 
-        public void Delete(string id) => _users.DeleteOne(game => game.NIC == id);
+        public void Delete(string id) => _users.DeleteOne(train => train.NIC == id);
     }
 }

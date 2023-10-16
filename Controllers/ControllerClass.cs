@@ -12,8 +12,8 @@ namespace mongodb_dotnet_example.Controllers
     {
 
 
-        private readonly UserService _userService;
-        private readonly BackendOfficerService _backendService;
+        private readonly UserService _userService; //User service
+        private readonly BackendOfficerService _backendService; //Backend service
 
         public ControllerClass(UserService userService, BackendOfficerService backendService)
         {
@@ -21,46 +21,70 @@ namespace mongodb_dotnet_example.Controllers
             _backendService = backendService;
         }
 
-        [HttpPost]
-        [Route("Train")]
+        [HttpPost] // Specifies that this method handles HTTP  requests
+        [Route("Train")] // Specifies the endpoint route for this method
         public ActionResult<Train> Create(Train train)
         {
-            var trainreturn = _backendService.Create(train);
-
-            return CreatedAtRoute(new { id = train.Id }, train);
-        }
-
-        [HttpGet]
-        [Route("Train")]
-        public ActionResult<List<Train>> GetTrain()
-        {
-            return _backendService.GetTrain();
-        }
-        [HttpPut]
-        [Route("Train")]
-        public IActionResult UpdateTrain(string id, Train train)
-        {
-
-            var trainDb = _backendService.GetTrainById(id);
-
-            if (trainDb == null)
+            try
             {
-                return NotFound();
+                var trainreturn = _backendService.Create(train); //pass object
+
+                return CreatedAtRoute(new { id = train.Id }, train);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
             }
 
-            var User = _backendService.UpdateTrain(id, train);
-            return Ok(User);
         }
-        [HttpPut]
-        [Route("CancelTrain")]
+
+        [HttpGet] // Specifies that this method handles HTTP  requests
+        [Route("Train")]// Specifies the endpoint route for this method
+        public ActionResult<List<Train>> GetTrain()
+        {
+            try
+            {
+                return _backendService.GetTrain();
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
+        }
+        [HttpPut] // Specifies that this method handles HTTP  requests
+        [Route("Train")]// Specifies the endpoint route for this method
+        public IActionResult UpdateTrain(string id, Train train)
+        {
+            try
+            {
+                var trainDb = _backendService.GetTrainById(id);  //pass id
+
+                if (trainDb == null)
+                {
+                return NotFound();
+                }
+
+            var User = _backendService.UpdateTrain(id, train); 
+            return Ok(User);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
+        }
+        [HttpPut] // Specifies that this method handles HTTP  requests
+        [Route("CancelTrain")]// Specifies the endpoint route for this method
         public IActionResult CancelTrain(string id, Train train)
         {
 
             try
             {
-                var game = _backendService.GetTrainById(id);
+                var trainDB = _backendService.GetTrainById(id);  //pass id
 
-                if (game == null)
+                if (trainDB == null)
                 {
                     return NotFound();
                 }
@@ -77,8 +101,6 @@ namespace mongodb_dotnet_example.Controllers
                 // Handle other exceptions here if needed
                 return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
             }
-
-
 
         }
         [HttpPost]
@@ -111,12 +133,15 @@ namespace mongodb_dotnet_example.Controllers
 
 
         }
-        [HttpGet]
-        [Route("History")]
+        [HttpGet] // Specifies that this method handles HTTP GET requests
+        [Route("History")] // Specifies the endpoint route for this method
         public ActionResult<List<History>> GetReservationHistory()
         {
+            // Call the GetReservationHistory method from the _backendService to retrieve reservation history
+            // and return the result as an ActionResult containing a list of History objects.
             return _backendService.GetReservationHistory();
         }
+
         [HttpGet]
         [Route("Reservation")]
         public ActionResult<List<Reservation>> GetReservation()
@@ -127,7 +152,14 @@ namespace mongodb_dotnet_example.Controllers
         [HttpGet("Reservation/{id}")]
         public ActionResult<Reservation> GetReservation(String id)
         {
-            return _backendService.GetReservationByID(id);
+            try
+            {
+                return _backendService.GetReservationByID(id); //pass id
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
         }
 
 
@@ -165,25 +197,49 @@ namespace mongodb_dotnet_example.Controllers
             return _userService.Get();
         }
 
-        [HttpGet]
-        [Route("traveller")]
+        [HttpGet] // Specifies that this method handles HTTP GET requests
+        [Route("traveller")]// Specifies the endpoint route for this method
         public ActionResult<List<Users>> GetTravellers()
         {
-            return _userService.GetTravellers();
+            try
+            {
+                return _userService.GetTravellers();//Call get function
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
         }
 
-        [HttpGet]
-        [Route("activetraveller")]
+        [HttpGet]// Specifies that this method handles HTTP GET requests
+        [Route("activetraveller")] //Specifies the endpoint route for this method
         public ActionResult<List<Users>> GetActiveTravellers()
         {
-            return _userService.GetActiveTravellers();
+            try
+            {
+                return _userService.GetActiveTravellers(); //Call get function
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
         }
 
-        [HttpGet]
-        [Route("travellerprofile")]
+        [HttpGet]// Specifies that this method handles HTTP GET requests
+        [Route("travellerprofile")] //Specifies the endpoint route for this method
         public ActionResult<List<Users>> GetTravellerProfile()
         {
-            return _userService.GetTravellerProfile();
+            try
+            {
+                return _userService.GetTravellerProfile();
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions here if needed
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
         }
 
         [HttpGet("{id}")]
@@ -199,21 +255,32 @@ namespace mongodb_dotnet_example.Controllers
             return users;
         }
 
-        [HttpPost]
-        public ActionResult<Users> Create(Users users)
+        [HttpPost] // Specifies that this method handles HTTP POST requests
+        public ActionResult<Users> Create(Users users) // Specifies the endpoint route for this method
         {
-            _userService.Create(users);
+            try
+            {
+                _userService.Create(users); //Pass object to user service create method
 
-            return CreatedAtRoute("GetGame", new { id = users.NIC.ToString() }, users);
+                return CreatedAtRoute(new { id = users.NIC.ToString() }, users); //return the result 
+            }
+            catch (Exceptions.CustomException ex)
+            {
+                return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
         }
 
-        [HttpPost]
-        [Route("login")]
+        [HttpPost]// Specifies that this method handles HTTP POST requests
+        [Route("login")]// Specifies the endpoint route for this method
         public ActionResult<Users> Login(Users users)
         {
             try
             {
-                var result = _userService.Login(users);
+                var result = _userService.Login(users); //Pass object to login service
                 return Ok(result);
             }
             catch (Exceptions.CustomException ex)
@@ -225,37 +292,43 @@ namespace mongodb_dotnet_example.Controllers
                 return BadRequest(ex.Message); // Return a 400 Bad Request status code along with the error message
             }
             catch (Exception ex)
-            {
-                // Handle other exceptions here if needed
+            {    
                 return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
             }
         }
 
-        [HttpPut]
-        public IActionResult Update(string id, Users gameIn)
+        [HttpPut]// Specifies that this method handles HTTP PUT requests
+        public IActionResult Update(string id, Users users)
         {
-            var game = _userService.Get(id);
-
-            if (game == null)
+            try
             {
-                return NotFound();
+                var user = _userService.Get(id); //Check user
+
+            if (user == null)
+            {
+                return NotFound();  // Return a user not found
             }
-            var User = _userService.Update(id, gameIn);
+            var User = _userService.Update(id, users);
             return Ok(User);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
 
         }
 
         [HttpDelete()]
         public IActionResult Delete(string id)
         {
-            var game = _userService.Get(id);
+            var user = _userService.Get(id);
 
-            if (game == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _userService.Delete(game.NIC);
+            _userService.Delete(user.NIC);
 
             return NoContent();
         }
