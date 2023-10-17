@@ -325,6 +325,27 @@ namespace mongodb_dotnet_example.Controllers
             }
 
         }
+        [HttpPut]// Specifies that this method handles HTTP PUT requests
+        [Route("updateTrveller")]// Specifies the endpoint route for this method
+        public IActionResult updateTrveller(string id, Users users)
+        {
+            try
+            {
+                var user = _userService.Get(id); //Check user
+
+                if (user == null)
+                {
+                    return NotFound();  // Return a user not found
+                }
+                var User = _userService.UpdateTraveller(id, users);
+                return Ok(User);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error"); // Return a 500 Internal Server Error status code
+            }
+
+        }
 
         [HttpDelete()]
         public IActionResult Delete(string id)

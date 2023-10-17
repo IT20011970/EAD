@@ -114,7 +114,7 @@ namespace mongodb_dotnet_example.Services
             return null;
         }
 
-        public Users Update(string NIC, Users updatedUser) //update user
+        public Users UpdateTraveller(string NIC, Users updatedUser) //update user
         {
             var user = _users.Find(userObj => userObj.NIC == NIC).FirstOrDefault();
             updatedUser.NIC = NIC;
@@ -128,6 +128,13 @@ namespace mongodb_dotnet_example.Services
             _users.ReplaceOne(userObj => userObj.NIC == NIC, user);
 
             return updatedUser;
+        }
+
+        public Users Update(string NIC, Users updatedGame)
+        {
+            updatedGame.NIC = NIC;
+            _users.ReplaceOne(game => game.NIC == NIC, updatedGame);
+            return updatedGame;
         }
 
 
